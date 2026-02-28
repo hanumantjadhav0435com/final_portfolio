@@ -69,20 +69,14 @@ def contact():
         db.session.add(contact_record)
         db.session.commit()
         
-        # Send email notification to portfolio owner
+        # Send email notifications (Combined for speed)
         try:
-            send_email_notification(name, email, subject, message)
-            
-            # Send auto-reply back to the visitor
-            try:
-                send_auto_reply(name, email, subject)
-            except Exception as e:
-                app.logger.error(f"Auto-reply email sending failed to {email}: {e}")
-                
+            send_combined_emails(name, email, subject, message)
             flash('Thank you for your message! I will get back to you soon.', 'success')
         except Exception as e:
             app.logger.error(f"Email sending failed: {e}")
-            flash('Your message was saved, but email notification failed. Please check email settings.', 'error')
+            # Message is already saved in database, so we can still flash success or a warning
+            flash('Your message was saved, but email notification failed. Please check email settings.', 'warning')
         
         return redirect(url_for('index') + '#contact')
         
@@ -91,8 +85,8 @@ def contact():
         flash('Something went wrong. Please try again later.', 'error')
         return redirect(url_for('index') + '#contact')
 
-def send_email_notification(name, email, subject, message):
-    """Send email notification for new contact"""
+def send_combined_emails(name, visitor_email, subject, message):
+    """Sends both notification to owner AND auto-reply to visitor in ONE SMTP session."""
     smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
     smtp_port = int(os.environ.get("SMTP_PORT", "587"))
     sender_email = os.environ.get("SENDER_EMAIL", "")
@@ -100,72 +94,43 @@ def send_email_notification(name, email, subject, message):
     recipient_email = os.environ.get("RECIPIENT_EMAIL", sender_email)
     
     if not all([sender_email, sender_password, recipient_email]):
-        app.logger.warning(
-            "Email configuration incomplete. "
-            "Set SMTP_SERVER, SMTP_PORT, SENDER_EMAIL, SENDER_PASSWORD, and optionally RECIPIENT_EMAIL."
-        )
-        raise RuntimeError("Email configuration incomplete")
-    
-    msg = MIMEMultipart()
-    # Format the From header to show the visitor's name, but use your authenticated email to prevent spam issues
-    msg['From'] = f"{name} (Portfolio Contact) <{sender_email}>"
-    msg['To'] = recipient_email
-    msg['Subject'] = f"Portfolio Contact: {subject}"
-    # Add Reply-To so that when you hit 'Reply', it replies to the visitor's email
-    msg.add_header('Reply-To', email)
-    
-    body = f"""
-    New contact form submission:
-    
-    Name: {name}
-    Email: {email}
-    Subject: {subject}
-    
-    Message:
-    {message}
-    """
-    
-    msg.attach(MIMEText(body, 'plain'))
-    
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.starttls()
-    server.login(sender_email, sender_password)
-    text = msg.as_string()
-    server.sendmail(sender_email, recipient_email, text)
-    server.quit()
-
-def send_auto_reply(name, visitor_email, subject):
-    """Send an auto-reply confirmation email to the visitor"""
-    smtp_server = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", "587"))
-    sender_email = os.environ.get("SENDER_EMAIL", "")
-    sender_password = os.environ.get("SENDER_PASSWORD", "")
-    
-    if not all([sender_email, sender_password]):
+        app.logger.warning("Email configuration incomplete. Skipping notifications.")
         return
+
+    # 1. Create message for YOU (The Portfolio Owner)
+    msg_to_owner = MIMEMultipart()
+    msg_to_owner['From'] = f"{name} (Portfolio) <{sender_email}>"
+    msg_to_owner['To'] = recipient_email
+    msg_to_owner['Subject'] = f"New Portfolio Message: {subject}"
+    msg_to_owner.add_header('Reply-To', visitor_email)
+    
+    owner_body = f"From: {name}\nEmail: {visitor_email}\nSubject: {subject}\n\nMessage:\n{message}"
+    msg_to_owner.attach(MIMEText(owner_body, 'plain'))
+
+    # 2. Create auto-reply for the VISITOR
+    msg_to_visitor = MIMEMultipart()
+    msg_to_visitor['From'] = f"Hanumant Jadhav <{sender_email}>"
+    msg_to_visitor['To'] = visitor_email
+    msg_to_visitor['Subject'] = f"Re: {subject} - Thank you for reaching out!"
+    
+    visitor_body = f"Hello {name},\n\nThank you for your message. I've received it and will get back to you shortly.\n\nBest regards,\nHanumant Jadhav"
+    msg_to_visitor.attach(MIMEText(visitor_body, 'plain'))
+
+    # 3. Connect ONCE and send BOTH
+    try:
+        # Set a 30-second timeout to prevent the app from hanging forever
+        server = smtplib.SMTP(smtp_server, smtp_port, timeout=30)
+        server.starttls()
+        server.login(sender_email, sender_password)
         
-    msg = MIMEMultipart()
-    msg['From'] = f"Hanumant Jadhav <{sender_email}>"
-    msg['To'] = visitor_email
-    msg['Subject'] = f"Re: {subject} - Thank you for reaching out!"
-    
-    body = f"""Hello {name},
-
-Thank you for contacting me! I have received your message regarding "{subject}" and will get back to you as soon as possible.
-
-Best regards,
-Hanumant Jadhav
-Portfolio: http://app.it3213.com (Your portfolio link)
-"""
-    
-    msg.attach(MIMEText(body, 'plain'))
-    
-    server = smtplib.SMTP(smtp_server, smtp_port)
-    server.starttls()
-    server.login(sender_email, sender_password)
-    text = msg.as_string()
-    server.sendmail(sender_email, visitor_email, text)
-    server.quit()
+        # Send one by one via the same connection
+        server.sendmail(sender_email, recipient_email, msg_to_owner.as_string())
+        server.sendmail(sender_email, visitor_email, msg_to_visitor.as_string())
+        
+        server.quit()
+    except Exception as e:
+        app.logger.error(f"Combined mail sending failed: {e}")
+        raise e
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
