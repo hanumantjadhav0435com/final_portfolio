@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+      <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="url(#grad1)"/>
+  
+  <!-- Grid pattern -->
+  <rect width="100%" height="100%" fill="url(#grid)"/>
+  
+  <!-- Geometric shapes -->
+  <circle cx="150" cy="200" r="100" fill="rgba(255,255,255,0.1)" opacity="0.5"/>
+  <circle cx="1000" cy="150" r="80" fill="rgba(255,255,255,0.1)" opacity="0.3"/>
+  <circle cx="900" cy="600" r="120" fill="rgba(255,255,255,0.1)" opacity="0.4"/>
+  
+  <!-- Triangles -->
+  <polygon points="200,600 300,600 250,500" fill="rgba(255,255,255,0.1)" opacity="0.3"/>
+  <polygon points="1000,400 1100,400 1050,300" fill="rgba(255,255,255,0.1)" opacity="0.4"/>
+  
+  <!-- Lines -->
+  <line x1="0" y1="400" x2="1200" y2="350" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+  <line x1="0" y1="600" x2="1200" y2="650" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
+</svg>

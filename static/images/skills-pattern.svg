@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="skillGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="skillGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:0.8" />
+    </linearGradient>
+    <pattern id="dots" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="20" cy="20" r="2" fill="rgba(102,126,234,0.3)"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  <rect width="100%" height="100%" fill="url(#dots)"/>
+  
+  <!-- Abstract geometric shapes -->
+  <circle cx="100" cy="100" r="80" fill="url(#skillGrad1)" opacity="0.6"/>
+  <circle cx="700" cy="500" r="60" fill="url(#skillGrad2)" opacity="0.5"/>
+  
+  <!-- Hexagons -->
+  <polygon points="200,200 250,175 300,200 300,250 250,275 200,250" fill="url(#skillGrad1)" opacity="0.4"/>
+  <polygon points="500,100 550,75 600,100 600,150 550,175 500,150" fill="url(#skillGrad2)" opacity="0.3"/>
+  
+  <!-- Triangles -->
+  <polygon points="400,300 450,300 425,250" fill="url(#skillGrad1)" opacity="0.5"/>
+  <polygon points="150,450 200,450 175,400" fill="url(#skillGrad2)" opacity="0.4"/>
+  
+  <!-- Rectangles -->
+  <rect x="600" y="300" width="80" height="80" rx="10" fill="url(#skillGrad1)" opacity="0.4"/>
+  <rect x="50" y="300" width="60" height="60" rx="8" fill="url(#skillGrad2)" opacity="0.3"/>
+  
+  <!-- Lines and connections -->
+  <line x1="100" y1="100" x2="300" y2="200" stroke="url(#skillGrad1)" stroke-width="3" opacity="0.4"/>
+  <line x1="500" y1="100" x2="700" y2="500" stroke="url(#skillGrad2)" stroke-width="3" opacity="0.3"/>
+  
+  <!-- Tech symbols -->
+  <text x="350" y="450" font-family="monospace" font-size="60" fill="url(#skillGrad1)" opacity="0.5">&lt;/&gt;</text>
+  <text x="550" y="350" font-family="monospace" font-size="40" fill="url(#skillGrad2)" opacity="0.4">{}</text>
+  
+  <!-- Floating particles -->
+  <circle cx="300" cy="80" r="5" fill="url(#skillGrad1)" opacity="0.6"/>
+  <circle cx="150" cy="250" r="7" fill="url(#skillGrad2)" opacity="0.5"/>
+  <circle cx="650" cy="150" r="6" fill="url(#skillGrad1)" opacity="0.4"/>
+  <circle cx="400" cy="500" r="8" fill="url(#skillGrad2)" opacity="0.6"/>
+  
+  <!-- Abstract waves -->
+  <path d="M0,400 Q200,350 400,400 T800,400" stroke="url(#skillGrad1)" stroke-width="2" fill="none" opacity="0.3"/>
+  <path d="M0,500 Q200,450 400,500 T800,500" stroke="url(#skillGrad2)" stroke-width="2" fill="none" opacity="0.4"/>
+</svg>
