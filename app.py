@@ -129,7 +129,7 @@ def send_combined_emails(name, visitor_email, subject, message):
         
         server.quit()
     except Exception as e:
-        app.logger.error(f"Combined mail sending failed: {e}")
+        app.logger.error(f"DETAILED MAIL ERROR: {type(e).__name__}: {str(e)}")
         raise e
 
 if __name__ == '__main__':
